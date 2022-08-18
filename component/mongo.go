@@ -97,7 +97,18 @@ func NewMongoComponent() *mongoComponent {
 		fmt.Printf("mongoClient init error. err %s\n", err)
 		panic("mongo connect error")
 	}
-	return &mongoComponent{client, "demo"}
+
+	dataBase := "demo"
+	doc := &model{
+		Key:   "name",
+		Value: Mongo,
+	}
+	_, err = client.Database(dataBase).Collection(collectionName).InsertOne(context.TODO(), doc)
+	if err != nil {
+		fmt.Printf("mongoClient init error. err %s\n", err)
+		panic("mongo init error")
+	}
+	return &mongoComponent{client, dataBase}
 }
 
 //init 项目启动时，会从环境变量中获取mongodb的地址，用户名和密码
