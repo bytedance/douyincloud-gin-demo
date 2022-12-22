@@ -19,14 +19,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pipiguanli/douyincloud_mock/component"
 	"github.com/pipiguanli/douyincloud_mock/service"
+	"log"
 )
 
 func main() {
 	component.InitComponents()
 	r := gin.Default()
+	r.Use(gin.Logger()) // Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
+	//r.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
 
-	r.GET("/api/hello", service.Hello)
-	r.POST("/api/set_name", service.SetName)
+	r.POST("/api/douyincloud/dev/extension_callback", service.ExtensionCallback)
+	r.POST("/api/douyincloud/prod/extension_callback", service.ExtensionCallback)
+	r.POST("/api/douyincloud/dev/message_callback", service.MessageCallback)
+	r.POST("/api/douyincloud/prod/message_callback", service.MessageCallback)
 
-	r.Run(":8000")
+	err := r.Run(":8000")
+	if err != nil {
+		log.Println(err.Error())
+	}
 }
