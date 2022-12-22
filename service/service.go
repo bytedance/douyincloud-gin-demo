@@ -16,9 +16,9 @@ limitations under the License.
 package service
 
 import (
-	"douyincloud-gin-demo/component"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/pipiguanli/douyincloud_mock/component"
 )
 
 func Hello(ctx *gin.Context) {

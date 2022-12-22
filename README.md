@@ -1,4 +1,4 @@
-# douyincloud-gin-demo
+# douyincloud_mock
 本项目是抖音云平台基于go语言gin框架的开发模版，模版通过使用Redis和MongoDB实现了简单的hello-world功能。\
 抖音云平台支持基于Git代码和Docker镜像部署两种方式。其中，Dockerfile文件可以参考本项目中的Dockerfile文件。
 部署在抖音云平台的服务日志需要重定向到标准输出，并在抖音云平台日志功能中查看。

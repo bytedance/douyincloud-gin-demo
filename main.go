@@ -16,9 +16,9 @@ limitations under the License.
 package main
 
 import (
-	"douyincloud-gin-demo/component"
-	"douyincloud-gin-demo/service"
 	"github.com/gin-gonic/gin"
+	"github.com/pipiguanli/douyincloud_mock/component"
+	"github.com/pipiguanli/douyincloud_mock/service"
 )
 
 func main() {
