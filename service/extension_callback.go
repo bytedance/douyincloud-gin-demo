@@ -10,11 +10,11 @@ import (
 )
 
 func ExtensionCallback(ctx *gin.Context) {
-	var req *ExtensionCallbackReq
+	var req ExtensionCallbackReq
 
 	reqPath := ctx.FullPath()
 
-	err := ctx.Bind(req)
+	err := ctx.Bind(&req)
 	if err != nil {
 		TemplateFailure(ctx, Err.NewQaError(Err.ParamsResolveErr))
 		return
@@ -44,8 +44,8 @@ func ExtensionCallback(ctx *gin.Context) {
 			QaPath: &reqPath,
 		},
 	}
-	
-	log.Printf("[QA] request=%+v", utils.ToJsonString(req))   // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
+
+	log.Printf("[QA] request=%+v", utils.ToJsonString(&req))  // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
 	log.Printf("[QA] response=%+v", utils.ToJsonString(resp)) // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
 
 	ctx.JSON(200, resp)
