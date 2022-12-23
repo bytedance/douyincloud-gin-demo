@@ -22,12 +22,14 @@ import (
 	"log"
 )
 
-func main() {
+func init() {
 	//component.InitComponents()
-	r := gin.Default()
-	r.Use(gin.Logger()) // Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
-	//r.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
+}
 
+func main() {
+
+	r := gin.Default()
+	r.GET("/v1/ping", service.Ping)
 	r.POST("/api/douyincloud/dev/extension_callback", service.ExtensionCallback)
 	r.POST("/api/douyincloud/prod/extension_callback", service.ExtensionCallback)
 	r.POST("/api/douyincloud/dev/message_callback", service.MessageCallback)

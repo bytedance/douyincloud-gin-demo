@@ -5,6 +5,18 @@ import (
 	common_errors "github.com/pipiguanli/douyincloud_mock/errors"
 )
 
+func Ping(ctx *gin.Context) {
+	reqPath := ctx.FullPath()
+	resp := &TemplateResp{
+		ErrNo:   0,
+		ErrTips: "success",
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
+	}
+	ctx.JSON(200, resp)
+}
+
 func TemplateFailure(ctx *gin.Context, err *common_errors.QaError) {
 	reqPath := ctx.FullPath()
 
