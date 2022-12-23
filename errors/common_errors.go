@@ -19,15 +19,23 @@ func (e *QaError) GetError() error {
 }
 
 func NewQaError(code int64, msg ...string) *QaError {
+	errTips := QaErrorMap[code]
+
 	if code == 0 {
 		return &QaError{
 			ErrNo:   code,
-			ErrTips: "success",
+			ErrTips: errTips,
 		}
+	}
+
+	if msg != nil {
+		errTips = fmt.Sprintf("%v | %v", errTips, strings.Join(msg, " | "))
+	} else {
+		errTips = fmt.Sprintf("%v", errTips)
 	}
 	return &QaError{
 		ErrNo:   code,
-		ErrTips: fmt.Sprintf(QaErrorMap[code], strings.Join(msg, "|")),
+		ErrTips: errTips,
 	}
 }
 
@@ -55,7 +63,8 @@ var (
 		InvalidParamErr:  "参数错误",
 		ParamsResolveErr: "参数解析异常，请注意参数格式",
 		SystemErr:        "系统错误，请重试",
-		TccContolErr:     "通过TCC的配置项来控制本次响应返回异常", // （注意：并非是TCC本身出现异常）
+		QaCommandErr:     "[QA-请求维度控制] 通过本次请求中的 msg.qa_command 的值来控制本次响应返回异常",
+		TccContolErr:     "[QA-全局维度控制] 通过TCC的配置项来控制本次响应返回异常", // （注意：并非是TCC本身出现异常）
 		SdkErr:           "调用sdk方法返回了错误",
 	}
 )

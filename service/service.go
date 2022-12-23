@@ -2,14 +2,16 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	common_errors "github.com/pipiguanli/douyincloud_mock/errors"
+	Err "github.com/pipiguanli/douyincloud_mock/errors"
 )
 
 func Ping(ctx *gin.Context) {
 	reqPath := ctx.FullPath()
+
+	code := int64(0)
 	resp := &TemplateResp{
-		ErrNo:   0,
-		ErrTips: "success",
+		ErrNo:   code,
+		ErrTips: Err.QaErrorMap[code],
 		QaExtra: &QaExtra{
 			QaPath: &reqPath,
 		},
@@ -17,7 +19,7 @@ func Ping(ctx *gin.Context) {
 	ctx.JSON(200, resp)
 }
 
-func TemplateFailure(ctx *gin.Context, err *common_errors.QaError) {
+func TemplateFailure(ctx *gin.Context, err *Err.QaError) {
 	reqPath := ctx.FullPath()
 
 	resp := &TemplateResp{
@@ -31,7 +33,7 @@ func TemplateFailure(ctx *gin.Context, err *common_errors.QaError) {
 	ctx.JSON(200, resp)
 }
 
-func TemplateFailureWithHttpStatusCode(ctx *gin.Context, httpStatusCode int, err *common_errors.QaError) {
+func TemplateFailureWithHttpStatusCode(ctx *gin.Context, httpStatusCode int, err *Err.QaError) {
 	reqPath := ctx.FullPath()
 
 	resp := &TemplateResp{
