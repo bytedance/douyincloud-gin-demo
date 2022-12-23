@@ -17,13 +17,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/pipiguanli/douyincloud_mock/component"
+	//"github.com/pipiguanli/douyincloud_mock/component"
 	"github.com/pipiguanli/douyincloud_mock/service"
 	"log"
 )
 
 func main() {
-	component.InitComponents()
+	//component.InitComponents()
 	r := gin.Default()
 	r.Use(gin.Logger()) // Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
 	//r.Use(gin.Recovery()) // Recovery middleware recovers from any panics and writes a 500 if there was one.
