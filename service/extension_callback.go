@@ -9,6 +9,7 @@ import (
 
 func ExtensionCallback(ctx *gin.Context) {
 	var req ExtensionCallbackReq
+	reqPath := ctx.FullPath()
 
 	err := ctx.Bind(&req)
 	if err != nil {
@@ -36,6 +37,9 @@ func ExtensionCallback(ctx *gin.Context) {
 		Data: &Data{
 			Body: &msgJson,
 		},
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
 	}
 	ctx.JSON(200, resp)
 }
@@ -46,9 +50,10 @@ type ExtensionCallbackReq struct {
 }
 
 type ExtensionCallbackResp struct {
-	ErrNo   int    `json:"err_no"`
-	ErrTips string `json:"err_tips"`
-	Data    *Data  `json:"data"`
+	ErrNo   int      `json:"err_no"`
+	ErrTips string   `json:"err_tips"`
+	Data    *Data    `json:"data"`
+	QaExtra *QaExtra `json:"qa_extra"`
 }
 
 type Data struct {

@@ -9,6 +9,7 @@ import (
 
 func MessageCallback(ctx *gin.Context) {
 	var req MessageCallbackReq
+	reqPath := ctx.FullPath()
 
 	err := ctx.Bind(&req)
 	if err != nil {
@@ -32,6 +33,9 @@ func MessageCallback(ctx *gin.Context) {
 	resp := &ExtensionCallbackResp{
 		ErrNo:   0,
 		ErrTips: "success",
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
 	}
 	ctx.JSON(200, resp)
 }
@@ -42,6 +46,7 @@ type MessageCallbackReq struct {
 }
 
 type MessageCallbackResp struct {
-	ErrNo   int    `json:"err_no"`
-	ErrTips string `json:"err_tips"`
+	ErrNo   int      `json:"err_no"`
+	ErrTips string   `json:"err_tips"`
+	QaExtra *QaExtra `json:"qa_extra"`
 }
