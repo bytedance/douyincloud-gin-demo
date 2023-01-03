@@ -1,6 +1,6 @@
 package consts
 
-var (
+const (
 	TestDataBigJson = `
 {
     "data": {

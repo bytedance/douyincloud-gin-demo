@@ -37,7 +37,7 @@ func MessageCallback(ctx *gin.Context) {
 	case "timeout":
 		time.Sleep(time.Duration(5) * time.Second)
 	case "big_json":
-		body = &consts.TestDataBigJson
+		body = utils.StringPtr(consts.TestDataBigJson)
 	}
 
 	resp := &ExtensionCallbackResp{
