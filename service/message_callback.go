@@ -12,13 +12,16 @@ import (
 
 func MessageCallback(ctx *gin.Context) {
 	var req MessageCallbackReq
+	defer func() {
+		log.Printf("[QA] request=%+v", utils.ToJsonString(&req)) // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
+	}()
+
 	reqPath := ctx.FullPath()
 	err := ctx.Bind(&req)
 	if err != nil {
 		TemplateFailure(ctx, Err.NewQaError(Err.ParamsResolveErr))
 		return
 	}
-	log.Printf("[QA] request=%+v", utils.ToJsonString(&req)) // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
 
 	msgJson := req.Msg
 	body := &msgJson
