@@ -13,7 +13,7 @@ import (
 func MessageCallback(ctx *gin.Context) {
 	var req MessageCallbackReq
 	defer func() {
-		log.Printf("[QA] request=%+v", utils.ToJsonString(&req)) // 只有正常返回才打上日志，其他异常返回都没打日志，以后再改吧，要么改 demo，要么改日志中间件
+		log.Printf("[QA] request=%+v", utils.ToJsonString(&req))
 	}()
 
 	reqPath := ctx.FullPath()
