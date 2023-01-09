@@ -23,6 +23,20 @@ func MessageCallback(ctx *gin.Context) {
 		return
 	}
 
+	if err := utils.CheckHeaders(ctx); err != nil {
+		TemplateFailure(ctx, Err.NewQaError(Err.InvalidParamErr, err.Error()))
+		return
+	}
+
+	if len(utils.GetHeaderByName(ctx, consts.Header_StressTag)) > 0 {
+		// 举例：sleep 1秒
+		//time.Sleep(time.Duration(1) * time.Second)
+
+		//sleep 随机 100ms ~ 1000ms（0.1s ~ 1s）
+		num := utils.GenerateRandInt(100, 1000)
+		time.Sleep(time.Duration(num) * time.Millisecond)
+	}
+
 	msgJson := req.Msg
 	body := &msgJson
 	switch gjson.Get(msgJson, "qa_command").String() {

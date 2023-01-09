@@ -37,7 +37,7 @@ func TemplateFailure(ctx *gin.Context, err *Err.QaError) {
 		},
 	}
 	httpStatusCode := 200
-	log.Printf("[QA] response=%+v, httpStatusCode=%+v", utils.ToJsonString(resp), httpStatusCode)
+	log.Printf("[QA] response=%+v, httpStatusCode=%+v, err=%+v", utils.ToJsonString(resp), httpStatusCode, err.Error())
 	ctx.JSON(httpStatusCode, resp)
 }
 
@@ -51,7 +51,7 @@ func TemplateFailureWithHttpStatusCode(ctx *gin.Context, httpStatusCode int, err
 			QaPath: &reqPath,
 		},
 	}
-	log.Printf("[QA] response=%+v, httpStatusCode=%+v", utils.ToJsonString(resp), httpStatusCode)
+	log.Printf("[QA] response=%+v, httpStatusCode=%+v, err=%+v", utils.ToJsonString(resp), httpStatusCode, err.Error())
 	ctx.JSON(httpStatusCode, resp)
 }
 
