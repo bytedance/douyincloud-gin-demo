@@ -16,17 +16,27 @@ limitations under the License.
 package main
 
 import (
-	"douyincloud-gin-demo/component"
-	"douyincloud-gin-demo/service"
 	"github.com/gin-gonic/gin"
+	//"github.com/pipiguanli/douyincloud_mock/component"
+	"github.com/pipiguanli/douyincloud_mock/service"
+	"log"
 )
 
+func init() {
+	//component.InitComponents()
+}
+
 func main() {
-	component.InitComponents()
+
 	r := gin.Default()
+	r.GET("/v1/ping", service.Ping)
+	r.POST("/api/douyincloud/dev/extension_callback", service.ExtensionCallback)
+	r.POST("/api/douyincloud/prod/extension_callback", service.ExtensionCallback)
+	r.POST("/api/douyincloud/dev/message_callback", service.MessageCallback)
+	r.POST("/api/douyincloud/prod/message_callback", service.MessageCallback)
 
-	r.GET("/api/hello", service.Hello)
-	r.POST("/api/set_name", service.SetName)
-
-	r.Run(":8000")
+	err := r.Run(":8000")
+	if err != nil {
+		log.Println(err.Error())
+	}
 }

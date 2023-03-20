@@ -1,97 +1,67 @@
-/*
-Copyright (year) Bytedance Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package service
 
 import (
-	"douyincloud-gin-demo/component"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	Err "github.com/pipiguanli/douyincloud_mock/errors"
+	"github.com/pipiguanli/douyincloud_mock/utils"
+	"log"
 )
 
-func Hello(ctx *gin.Context) {
-	target := ctx.Query("target")
-	if target == "" {
-		Failure(ctx, fmt.Errorf("param invalid"))
-		return
-	}
-	fmt.Printf("target= %s\n", target)
-	hello, err := component.GetComponent(target)
-	if err != nil {
-		Failure(ctx, fmt.Errorf("param invalid"))
-		return
-	}
+func Ping(ctx *gin.Context) {
+	reqPath := ctx.FullPath()
 
-	name, err := hello.GetName(ctx, "name")
-	if err != nil {
-		Failure(ctx, err)
-		return
-	}
-	Success(ctx, name)
-}
-
-func SetName(ctx *gin.Context) {
-	var req SetNameReq
-	err := ctx.Bind(&req)
-	if err != nil {
-		Failure(ctx, err)
-		return
-	}
-	hello, err := component.GetComponent(req.Target)
-	if err != nil {
-		Failure(ctx, fmt.Errorf("param invalid"))
-		return
-	}
-	err = hello.SetName(ctx, "name", req.Name)
-	if err != nil {
-		Failure(ctx, err)
-		return
-	}
-	Success(ctx, "")
-}
-
-func Failure(ctx *gin.Context, err error) {
-	resp := &Resp{
-		ErrNo:  -1,
-		ErrMsg: err.Error(),
+	code := int64(0)
+	resp := &TemplateResp{
+		ErrNo:   code,
+		ErrTips: Err.QaErrorMap[code],
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
 	}
 	ctx.JSON(200, resp)
 }
 
-func Success(ctx *gin.Context, data string) {
-	resp := &Resp{
-		ErrNo:  0,
-		ErrMsg: "success",
-		Data:   data,
+func PanicControl() {
+	log.Printf("[QA] 请求中解析到 qa_command:panic 指令，服务随后会 panic, 本次请求不会返回响应与响应日志")
+	panic("qa_command:panic")
+}
+
+func TemplateFailure(ctx *gin.Context, err *Err.QaError) {
+	reqPath := ctx.FullPath()
+
+	resp := &TemplateResp{
+		ErrNo:   err.ErrNo,
+		ErrTips: err.ErrTips,
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
 	}
-	ctx.JSON(200, resp)
+	httpStatusCode := 200
+	log.Printf("[QA] response=%+v, httpStatusCode=%+v, err=%+v", utils.ToJsonString(resp), httpStatusCode, err.Error())
+	ctx.JSON(httpStatusCode, resp)
 }
 
-type HelloResp struct {
-	ErrNo  int    `json:"err_no"`
-	ErrMsg string `json:"err_msg"`
-	Data   string `json:"data"`
+func TemplateFailureWithHttpStatusCode(ctx *gin.Context, httpStatusCode int, err *Err.QaError) {
+	reqPath := ctx.FullPath()
+
+	resp := &TemplateResp{
+		ErrNo:   err.ErrNo,
+		ErrTips: err.ErrTips,
+		QaExtra: &QaExtra{
+			QaPath: &reqPath,
+		},
+	}
+	log.Printf("[QA] response=%+v, httpStatusCode=%+v, err=%+v", utils.ToJsonString(resp), httpStatusCode, err.Error())
+	ctx.JSON(httpStatusCode, resp)
 }
 
-type SetNameReq struct {
-	Target string `json:"target"`
-	Name   string `json:"name"`
+type TemplateResp struct {
+	ErrNo   int64       `json:"err_no"`
+	ErrTips string      `json:"err_tips"`
+	Data    interface{} `json:"data"`
+	QaExtra *QaExtra    `json:"qa_extra"`
 }
 
-type Resp struct {
-	ErrNo  int         `json:"err_no"`
-	ErrMsg string      `json:"err_msg"`
-	Data   interface{} `json:"data"`
+type QaExtra struct {
+	QaPath *string `json:"qa_path"`
 }
