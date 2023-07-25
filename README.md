@@ -8,10 +8,6 @@
 .
 ├── Dockerfile              Dockerfile文件
 ├── Readme.md               Readme文件
-├── component               组件目录
-│ ├── mongo.go              mongo组件
-│ ├── redis.go              redis组件        
-│ └── types.go              组件接口声明
 ├── go.mod                  go.mod文件
 ├── go.sum                  go.sum文件
 ├── main.go                 主函数入口
@@ -24,27 +20,24 @@
 前往抖音云托管平台「调试」功能界面，进行请求调试。
 
 ## API说明
-### `GET /api/hello`
-对组件打招呼
+### `GET /api/get_open_id`
+获取openid，当未绑定用户时会返回获取openid失败的错误
 
-### 请求参数
-- `target`：`string` 组件名：redis，mongodb
 
 ### 响应结果
 ```json
 {
     "err_no": 0,
     "err_msg": "success",
-    "data": "hello,redis"
+    "data": "719f****-****-4c**-a0**-*********"
 }
 ```
 
-### `POST /api/set_name`
-给组件设置名称
+### `POST /api/text/antidirt`
+云调用示例，调用抖音开放平台的OpenApi进行脏词检测
 
 ### 请求参数
-- `target`:`string` 组件名：redis，mongodb
-- `name`:`string` 名称
+- `content`:`string` 待检测的内容
 
 ### 响应结果
 ```json
@@ -53,15 +46,6 @@
     "err_msg": "success",
     "data": ""
 }
-```
-
-### 组件使用注意事项
-在抖音云托管平台上启用组件后，抖音云平台会自动将组件的地址，账号，密码以环境变量的方式注入到容器中。\
-以Redis为例，在抖音云托管平台启用Redis组件后，平台会生成 `REDIS_ADDRESS`，`REDIS_USERNAME`，`REDIS_PASSWORD`三个环境变量，在业务代码中可以使用如下代码获取相应值。
-```
-	redisAddr := os.Getenv("REDIS_ADDRESS")
-	redisUserName := os.Getenv("REDIS_USERNAME")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
 ```
 
 ## License

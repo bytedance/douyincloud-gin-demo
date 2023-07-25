@@ -16,50 +16,66 @@ limitations under the License.
 package service
 
 import (
-	"douyincloud-gin-demo/component"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
-func Hello(ctx *gin.Context) {
-	target := ctx.Query("target")
-	if target == "" {
-		Failure(ctx, fmt.Errorf("param invalid"))
+func GetOpenID(ctx *gin.Context) {
+	openID := ctx.GetHeader("X-Tt-OPENID")
+	if openID == "" {
+		Failure(ctx, fmt.Errorf("openID is empty"))
 		return
 	}
-	fmt.Printf("target= %s\n", target)
-	hello, err := component.GetComponent(target)
-	if err != nil {
-		Failure(ctx, fmt.Errorf("param invalid"))
-		return
-	}
-
-	name, err := hello.GetName(ctx, "name")
-	if err != nil {
-		Failure(ctx, err)
-		return
-	}
-	Success(ctx, name)
+	Success(ctx, openID)
 }
 
-func SetName(ctx *gin.Context) {
-	var req SetNameReq
-	err := ctx.Bind(&req)
+func TextAntidirt(ctx *gin.Context) {
+	var textAntidirtReq TextAntidirtReq
+	err := ctx.Bind(&textAntidirtReq)
 	if err != nil {
+		log.Printf("params bind error. err %s", err)
 		Failure(ctx, err)
 		return
 	}
-	hello, err := component.GetComponent(req.Target)
-	if err != nil {
-		Failure(ctx, fmt.Errorf("param invalid"))
-		return
+
+	url := "http://developer.toutiao.com/api/v2/tags/text/antidirt"
+	input := AntiInput{
+		Tasks: []Task{
+			{
+				Content: textAntidirtReq.Content,
+			},
+		},
 	}
-	err = hello.SetName(ctx, "name", req.Name)
+	body, _ := json.Marshal(input)
+
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
+		log.Printf("http new request error. err %s", err)
 		Failure(ctx, err)
 		return
 	}
-	Success(ctx, "")
+	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("call developer.toutiao.com error. err %s", err)
+		Failure(ctx, err)
+		return
+	}
+
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("call developer.toutiao.com error. err %s", err)
+		return
+	}
+	Success(ctx, string(respBody))
 }
 
 func Failure(ctx *gin.Context, err error) {
@@ -79,15 +95,15 @@ func Success(ctx *gin.Context, data string) {
 	ctx.JSON(200, resp)
 }
 
-type HelloResp struct {
-	ErrNo  int    `json:"err_no"`
-	ErrMsg string `json:"err_msg"`
-	Data   string `json:"data"`
+type TextAntidirtReq struct {
+	Content string `json:"content"`
 }
 
-type SetNameReq struct {
-	Target string `json:"target"`
-	Name   string `json:"name"`
+type AntiInput struct {
+	Tasks []Task `json:"tasks"`
+}
+type Task struct {
+	Content string `json:"content"`
 }
 
 type Resp struct {
